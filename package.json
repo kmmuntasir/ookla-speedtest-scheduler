@@ -1,0 +1,26 @@
+{
+  "name": "ookla-speedtest-scheduler",
+  "version": "1.0.0",
+  "description": "A dockerized environment that uses ookla speedtest cli tools with node.js to run shceduled speed tests, and much more",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kmmuntasir/ookla-speedtest-scheduler.git"
+  },
+  "keywords": [
+    "speedtest"
+  ],
+  "author": "Muntasir Billah Munna",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kmmuntasir/ookla-speedtest-scheduler/issues"
+  },
+  "homepage": "https://github.com/kmmuntasir/ookla-speedtest-scheduler#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
