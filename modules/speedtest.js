@@ -3,7 +3,7 @@ const dataPostProcessor = require('./dataPostProcessor')
 const {exec} = require('child_process');
 
 const speedtest = {
-    run: (serverId) => {
+    schedule: (serverId) => {
         logger.info('Initiating test');
         exec(
             `speedtest -f json -s ${serverId}`,

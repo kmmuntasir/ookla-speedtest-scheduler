@@ -12,7 +12,7 @@ app.get('/',
 app.get(
     '/speedtest',
     (req, res) => {
-        speedtest.run(36817);
+        speedtest.schedule(36817);
         res.send('Testing Speed')
     }
 )
