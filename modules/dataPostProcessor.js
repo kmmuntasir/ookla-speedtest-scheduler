@@ -3,7 +3,7 @@ const logger = require('../constants/logger');
 const common = require('../constants/common');
 const fs = require('fs');
 
-const OUTPUT_FILENAME = '../data/data.csv';
+const OUTPUT_FILENAME = './data/data.csv';
 
 const dataPostProcessor = {
     publishData: (output) => {
