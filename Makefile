@@ -5,10 +5,10 @@ info:
 	echo 'Docker Express'
 
 # Start the containers and install dependencies
-launch:
-	docker compose up -d
-	docker exec -it ${SERVICE_NAME} npm install
-	docker exec -it ${SERVICE_NAME} make speedup
+launch: build start install
+
+build:
+	docker build -t ${SERVICE_NAME}:latest .
 
 # Start the containers
 start:
@@ -18,13 +18,9 @@ start:
 shell:
 	docker exec -it ${SERVICE_NAME} bash
 
-# Prepare Ookla speed test cli tools
-speedup:
-	curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | bash
-	apt-get install speedtest
-	echo "YES" >> yes.txt
-	speedtest < yes.txt
-	rm yes.txt
+# Install dependencies
+install:
+	docker exec -it ${SERVICE_NAME} npm install
 
 # Stop the containers
 stop:

@@ -3,7 +3,7 @@ version: "3.9"
 services:
   express:
     container_name: ${SERVICE_NAME}
-    image: node:18.17.1
+    image: ${SERVICE_NAME}
     working_dir: ${WORKING_DIRECTORY}
     volumes:
       - .:${WORKING_DIRECTORY}
