@@ -1,5 +1,6 @@
 const PORT = process.env.LISTENING_PORT
 const speedtest = require('./modules/speedtest')
+const servers = require('./constants/servers')
 const express = require('express'),
     app = express();
 
@@ -12,7 +13,7 @@ app.get('/',
 app.get(
     '/speedtest',
     (req, res) => {
-        speedtest.schedule(36817);
+        speedtest.schedule(servers.surfshark_ltd.id);
         res.send('Testing Speed')
     }
 )
