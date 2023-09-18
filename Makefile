@@ -4,10 +4,15 @@ include .env
 info:
 	echo 'Docker Express'
 
+# Start the containers and install dependencies
+launch:
+	docker compose up -d
+	docker exec -it ${SERVICE_NAME} npm install
+	docker exec -it ${SERVICE_NAME} make speedup
+
 # Start the containers
 start:
 	docker compose up -d
-	docker exec -it ${SERVICE_NAME} make speedup
 
 # Enter the node container
 shell:

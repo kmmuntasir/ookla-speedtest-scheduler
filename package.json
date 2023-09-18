@@ -21,6 +21,8 @@
   },
   "homepage": "https://github.com/kmmuntasir/ookla-speedtest-scheduler#readme",
   "dependencies": {
-    "express": "^4.18.2"
+    "dayjs": "^1.11.9",
+    "express": "^4.18.2",
+    "winston": "^3.10.0"
   }
 }
