@@ -70,3 +70,28 @@ $(document).on('click', '#testButton', () => {
         }
     });
 });
+
+$(document).ready(() => {
+    $.ajax({
+        type: 'get',
+        url: 'http://localhost:4000/data',
+        success: function (response) {
+            console.log(response)
+            let rows = ''
+            for(let i=0; i<response.length; ++i) {
+                rows += `<tr>
+                        <td>${response[i].id}</td>
+                        <td>${response[i].timestamp}</td>
+                        <td>${response[i].ping}</td>
+                        <td>${response[i].download}</td>
+                        <td>${response[i].upload}</td>
+                        <td>${response[i].result}</td>
+                    </tr>`
+            }
+            $('#history').html(rows)
+        },
+        error: function (data) {
+            console.log(data)
+        }
+    });
+});

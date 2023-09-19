@@ -5,6 +5,7 @@ const speedtest = require('./modules/speedtest')
 const servers = require('./lib/servers')
 const express = require('express'),
     app = express();
+const jsonDb = require("./lib/jsonDb");
 
 app.use(express.static('view'))
 
@@ -28,8 +29,13 @@ app.get(
     }
 )
 
-app.get('/test', function(req, res) {
-    res.send('test')
+app.get('/test', async function (req, res) {
+    res.send('hello')
+});
+
+app.get('/data', async function (req, res) {
+    const data = await jsonDb.getAll()
+    res.send(data)
 });
 
 app.listen(PORT,
