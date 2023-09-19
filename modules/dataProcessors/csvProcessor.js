@@ -1,10 +1,10 @@
-const common = require("../../constants/common");
-const file = require("../../constants/file");
+const common = require("../../lib/common");
+const file = require("../../lib/file");
 
 const csvProcessor = {
     fileCheck: () => {
         if(!file.fileCheck(common.csvFilePath)) {
-            file.writeData(
+            file.appendData(
                 "Test ID; Timestamp; Ping; Download; Upload; Result URL / Error Message\n",
                 common.csvFilePath,
                 'CSV',
@@ -13,7 +13,7 @@ const csvProcessor = {
     },
     publish: (speedtest) => {
         csvProcessor.fileCheck()
-        file.writeData(
+        file.appendData(
             csvProcessor.buildCsvDataString(speedtest),
             common.csvFilePath,
             'CSV',

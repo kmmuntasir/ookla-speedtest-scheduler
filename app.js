@@ -2,7 +2,7 @@ const PORT = process.env.LISTENING_PORT
 const path = require('path');
 const { v4: uuidv4 } = require('uuid')
 const speedtest = require('./modules/speedtest')
-const servers = require('./constants/servers')
+const servers = require('./lib/servers')
 const express = require('express'),
     app = express();
 
@@ -27,6 +27,10 @@ app.get(
         res.send(response)
     }
 )
+
+app.get('/test', function(req, res) {
+    res.send('test')
+});
 
 app.listen(PORT,
     () => console.log(`[bootup]: Server is running at port: ${PORT}`));

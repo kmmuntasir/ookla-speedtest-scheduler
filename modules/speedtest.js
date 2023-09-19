@@ -1,4 +1,4 @@
-const logger = require('../constants/logger');
+const logger = require('../lib/logger');
 const dataPostProcessor = require('./dataPostProcessor')
 const {exec} = require('child_process');
 

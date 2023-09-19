@@ -1,6 +1,7 @@
 const csvProcessor = require("./dataProcessors/csvProcessor");
 const testObj = require("../models/test");
-const {dayjsLib} = require("../constants/dayjs");
+const {dayjsLib} = require("../lib/dayjs");
+const jsonProcessor = require("./dataProcessors/jsonProcessor");
 
 const dataPostProcessor = {
     getModel: (output) => {
@@ -25,6 +26,7 @@ const dataPostProcessor = {
     publishData: (output) => {
         const speedtest = dataPostProcessor.getModel(output)
         csvProcessor.publish(speedtest)
+        jsonProcessor.publish(speedtest)
     },
 }
 
