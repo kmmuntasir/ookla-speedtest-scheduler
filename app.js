@@ -2,7 +2,7 @@ const PORT = process.env.LISTENING_PORT
 const path = require('path');
 const { v4: uuidv4 } = require('uuid')
 const speedtest = require('./modules/speedtest')
-const servers = require('./lib/servers')
+const servers = require('./data/servers.json')
 const express = require('express'),
     app = express();
 const jsonDb = require("./lib/jsonDb");
@@ -35,6 +35,16 @@ app.get('/test', async function (req, res) {
 
 app.get('/data', async function (req, res) {
     const data = await jsonDb.getAll()
+    res.send(data)
+});
+
+app.get('/data', async function (req, res) {
+    const data = await jsonDb.getAll()
+    res.send(data)
+});
+
+app.get('/servers', async function (req, res) {
+    const data = await jsonDb.getServers()
     res.send(data)
 });
 
