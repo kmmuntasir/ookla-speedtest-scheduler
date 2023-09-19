@@ -1,10 +1,9 @@
 const winston = require('winston');
-const dayjs = require("./dayjs");
-const common = require('./common');
+const {dayjsLib} = require("./dayjs");
 const { combine, timestamp, printf, colorize, align } = winston.format;
 
 const timestampString = () => {
-    return dayjs.tz().format(common.dateTimeFormat);
+    return dayjsLib.getFormattedDateTimeString();
 }
 
 const logger = winston.createLogger({

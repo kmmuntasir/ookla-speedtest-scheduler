@@ -1,56 +1,31 @@
-const dayjs = require('../constants/dayjs');
-const logger = require('../constants/logger');
-const common = require('../constants/common');
-const fs = require('fs');
-
-const OUTPUT_FILENAME = './data/data.csv';
+const csvProcessor = require("./dataProcessors/csvProcessor");
+const testObj = require("../models/test");
+const {dayjsLib} = require("../constants/dayjs");
 
 const dataPostProcessor = {
+    getModel: (output) => {
+        let speedtest = testObj()
+
+        speedtest.id = output.testId
+        speedtest.timestamp = dayjsLib.getFormattedDateTimeString({
+            timestamp: output.data.timestamp
+        })
+
+        if (output.success) {
+            speedtest.ping = Math.round(output.data.ping.latency)
+            speedtest.download = (output.data.download.bandwidth / 125000).toFixed(2)
+            speedtest.upload = (output.data.upload.bandwidth / 125000).toFixed(2)
+            speedtest.result = output.data.result.url
+        } else {
+            speedtest.result = output.data.type + ': ' + output.data.error
+        }
+
+        return speedtest
+    },
     publishData: (output) => {
-        let dataString = (output.success)
-            ? csvProcessor.buildCsvDataString(output.data)
-            : csvProcessor.buildCsvErrorString(output.data)
-        csvProcessor.writeData(dataString)
+        const speedtest = dataPostProcessor.getModel(output)
+        csvProcessor.publish(speedtest)
     },
-}
-
-const csvProcessor = {
-    writeData: (dataString) => {
-        fs.appendFile(OUTPUT_FILENAME, dataString, function (err) {
-            if (err) {
-                logger.error(err)
-                throw err
-            } else {
-                logger.info('CSV String Written')
-                logger.info(dataString)
-            }
-        });
-    },
-    buildCsvDataString: (data) => {
-        return csvProcessor.getFormattedDateTimeString(data.timestamp)
-            + '; ' + Math.round(data.ping.latency)
-            + '; ' + (data.download.bandwidth / 125000).toFixed(2)
-            + '; ' + (data.upload.bandwidth / 125000).toFixed(2)
-            + '; ' + data.result.url + "\n";
-    },
-    buildCsvErrorString: (output) => {
-        return csvProcessor.getFormattedDateTimeString()
-            + '; '
-            + '; '
-            + '; '
-            + '; ' + csvProcessor.sanitizeStringForCSV(output.type + ': ' + output.error) + "\n";
-    },
-    getFormattedDateTimeString: (timestamp = null) => {
-        const dateObj = null === timestamp ? dayjs() : dayjs(timestamp);
-        return dateObj.tz().format(common.dateTimeFormat);
-    },
-    sanitizeStringForCSV: (dataString) => {
-        dataString = dataString.replace(/(\r\n|\n|\r|\t)/g, ' ');
-        dataString = dataString.replace(/"/g, '""');
-        dataString = `"${dataString}"`;
-
-        return dataString;
-    }
 }
 
 module.exports = dataPostProcessor

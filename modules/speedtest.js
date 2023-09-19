@@ -3,8 +3,8 @@ const dataPostProcessor = require('./dataPostProcessor')
 const {exec} = require('child_process');
 
 const speedtest = {
-    schedule: (serverId) => {
-        logger.info('Initiating test');
+    schedule: (serverId, testId) => {
+        logger.info(`Initiating test ${testId}`);
         exec(
             `speedtest -f json -s ${serverId}`,
             (error, stdout, stderr) => {
@@ -20,24 +20,25 @@ const speedtest = {
                         error: stderr
                     };
                 }
-                const data = speedtest.processOutput(output)
+                const data = speedtest.processOutput(output, testId)
                 dataPostProcessor.publishData(data)
             }
         );
     },
-    processOutput: (output) => {
+    processOutput: (output, testId) => {
+        let response = {
+            testId: testId,
+            data: output,
+        }
         try {
             let data = JSON.parse(output);
-            return {
-                success: true,
-                data: data,
-            }
+            response.success = true
+            response.data = data
+            return response
         } catch (e) {
             logger.error('JSON Parsing Failed')
-            return {
-                success: false,
-                data: output,
-            }
+            response.success = false
+            return response
         }
     },
 }
