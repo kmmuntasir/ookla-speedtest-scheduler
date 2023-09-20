@@ -11,7 +11,7 @@ $(document).on('click', '#testButton', () => {
 $(document).on('click', '#testRunButton', () => {
     speedtestModal.hide()
     notify(
-        '<h3>Test is running, please wait</h3><p>You will be notified when the test is finished</p>',
+        '<h4>Test is running, please wait</h4><p>You will be notified when the test is finished</p>',
         'info'
     )
     const serverId = $('#selectServer').val()
@@ -20,9 +20,8 @@ $(document).on('click', '#testRunButton', () => {
         url: `http://localhost:4000/speedtest?serverId=${serverId}`,
         success: function (response) {
             if ('success' === response.status) {
-                console.log(response)
                 notify(
-                    `<h3>Test #${response.testId} is finished</h3>
+                    `<h4>Test #${response.testId} is finished</h4>
                         <p>The chart and history table has been updated</p>`,
                     'success'
                 )
@@ -161,7 +160,7 @@ const drawChart = () => {
 }
 
 const isUrl = (str) => {
-    var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+    const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
         '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
         '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
         '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
