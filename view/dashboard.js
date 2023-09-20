@@ -2,11 +2,13 @@
 
 let ignoreErrorsInChart = true
 let speedtestModal
+let scheduleModal
 let history = []
 
-$(document).on('click', '#testButton', () => {
-    speedtestModal.show()
-});
+$(document).on('click', '#reloadData', () => {
+    loadHistory()
+    loadServers()
+})
 
 $(document).on('click', '#testRunButton', () => {
     speedtestModal.hide()
@@ -17,7 +19,7 @@ $(document).on('click', '#testRunButton', () => {
     const serverId = $('#selectServer').val()
     $.ajax({
         type: 'get',
-        url: `http://localhost:4000/speedtest?serverId=${serverId}`,
+        url: `http://localhost:4000/speedtest/run?serverId=${serverId}`,
         success: function (response) {
             if ('success' === response.status) {
                 notify(
@@ -40,10 +42,46 @@ $(document).on('click', '#testRunButton', () => {
     });
 });
 
+$(document).on('click', '#testScheduleButton', () => {
+    scheduleModal.hide()
+    const serverId = $('#selectScheduleServer').val()
+    const interval = $('#scheduleInterval').val() * 60 * 1000
+    setInterval(() => {
+        schedule(serverId)
+    }, interval)
+    notify(
+        `<h4>Test is scheduled</h4>
+                        <p>Refresh or close the page to stop</p>`,
+        'success'
+    )
+});
+
+const schedule = (serverId) => {
+    $.ajax({
+        type: 'get',
+        url: `http://localhost:4000/speedtest/schedule?serverId=${serverId}`,
+        success: function (response) {
+            if ('success' === response.status) {
+                notify(
+                    `<h4>Shceduled Test #${response.testId}</h4>`,
+                    'success'
+                )
+            } else {
+                console.log('Failed to schedule')
+            }
+        },
+        error: function (data) {
+            console.log('Failed')
+            console.log(data)
+        }
+    });
+}
+
 $(document).ready(() => {
     loadHistory()
     loadServers()
     speedtestModal = new bootstrap.Modal($('#speedtestModal'));
+    scheduleModal = new bootstrap.Modal($('#scheduleModal'));
 });
 
 const loadHistory = () => {
@@ -97,6 +135,7 @@ const loadServers = () => {
                 `
             }
             $('#selectServer').html(serverOptions)
+            $('#selectScheduleServer').html(serverOptions)
         },
         error: function (data) {
             console.log(data)

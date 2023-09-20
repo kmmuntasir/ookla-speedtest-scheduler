@@ -114,13 +114,13 @@
                 <div class="btn-toolbar">
                     <h3 class="mb-0">Dashboard</h3>
                     <span>&nbsp;</span>
-                    <div class="btn-group">
-                        <button id="errorToggle" class="btn btn-sm btn-success">Errors: <span>Hidden</span></button>
-                    </div>
+                    <button id="errorToggle" class="btn btn-sm btn-success mr-2">Errors: <span>Hidden</span></button>
+                    <span>&nbsp;</span>
+                    <button id="reloadData" class="btn btn-sm btn-outline-primary">Refresh Data</button>
                 </div>
                 <div class="btn-toolbar mb-2 mb-md-0">
-                    <button id="testButton" class="btn btn-primary me-2">Run an instant speed test</button>
-<!--                    <button id="scheduleButton" class="btn btn-outline-primary me-2">Schedule speed test</button>-->
+                    <button id="testButton" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#speedtestModal">Run an instant speed test</button>
+                    <button id="scheduleButton" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#scheduleModal">Schedule speed test</button>
 <!--                    <div class="btn-group me-2">-->
 <!--                        <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>-->
 <!--                        <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>-->
@@ -171,6 +171,36 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button id="testRunButton" type="button" class="btn btn-primary">Start</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="scheduleModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Schedule Speed Test</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body mb-3">
+                <label for="scheduleInterval" class="form-label">Test every</label><br>
+                <select class="form-control" id="scheduleInterval">
+                    <option value="2">2 Minutes</option>
+                    <option value="5">5 Minutes</option>
+                    <option value="10">10 Minutes</option>
+                    <option value="15">15 Minutes</option>
+                    <option value="30">30 Minutes</option>
+                </select>
+            </div>
+            <div class="modal-body mb-3">
+                <label for="selectScheduleServer" class="form-label">Select Server</label><br>
+                <select class="form-control" id="selectScheduleServer">
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button id="testScheduleButton" type="button" class="btn btn-primary">Schedule</button>
             </div>
         </div>
     </div>

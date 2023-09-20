@@ -1,11 +1,11 @@
 const logger = require('../lib/logger');
 const dataPostProcessor = require('./dataPostProcessor')
-const {execSync} = require('child_process');
+const {exec, execSync} = require('child_process');
 const common = require("../lib/common");
 
 const speedtest = {
     run: (serverId, testId) => {
-        logger.info(`Initiating test ${testId} with Server ${serverId}`)
+        logger.info(`Running test ${testId} with Server ${serverId}`)
         let output
         const command = `speedtest -f json -s ${serverId}`
 
@@ -28,6 +28,28 @@ const speedtest = {
         }
         const data = speedtest.processOutput(output, testId)
         return dataPostProcessor.publishData(data)
+    },
+    schedule: (serverId, testId) => {
+        logger.info(`Scheduling test ${testId} with Server ${serverId}`);
+        exec(
+            `speedtest -f json -s ${serverId}`,
+            (error, stdout, stderr) => {
+                let output = stdout;
+                if (error) {
+                    output = {
+                        type: 'exception',
+                        error: error.message
+                    };
+                } else if (stderr) {
+                    output = {
+                        type: 'stderr',
+                        error: stderr
+                    };
+                }
+                const data = speedtest.processOutput(output, testId)
+                dataPostProcessor.publishData(data)
+            }
+        );
     },
     processOutput: (output, testId) => {
         let response = {

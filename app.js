@@ -16,7 +16,7 @@ app.get('/', function(req, res) {
 });
 
 app.get(
-    '/speedtest',
+    '/speedtest/run',
     (req, res) => {
         if (undefined === req.query.serverId) {
             res.send({
@@ -29,6 +29,25 @@ app.get(
         const response = {
             status: 'success',
             testResult: testResult,
+            testId: testId,
+        }
+        res.send(response)
+    }
+)
+
+app.get(
+    '/speedtest/schedule',
+    (req, res) => {
+        if (undefined === req.query.serverId) {
+            res.send({
+                status: 'failed',
+                message: 'Server ID is required'
+            })
+        }
+        const testId = uuidv4()
+        speedtest.schedule(req.query.serverId, testId);
+        const response = {
+            status: 'success',
             testId: testId,
         }
         res.send(response)
