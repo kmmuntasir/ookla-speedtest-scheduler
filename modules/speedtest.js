@@ -4,7 +4,7 @@ const {exec} = require('child_process');
 
 const speedtest = {
     schedule: (serverId, testId) => {
-        logger.info(`Initiating test ${testId}`);
+        logger.info(`Initiating test ${testId} with Server ${serverId}`);
         exec(
             `speedtest -f json -s ${serverId}`,
             (error, stdout, stderr) => {

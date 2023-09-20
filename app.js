@@ -2,7 +2,6 @@ const PORT = process.env.LISTENING_PORT
 const path = require('path');
 const { v4: uuidv4 } = require('uuid')
 const speedtest = require('./modules/speedtest')
-const servers = require('./data/servers.json')
 const express = require('express'),
     app = express();
 const jsonDb = require("./lib/jsonDb");
@@ -19,8 +18,14 @@ app.get('/', function(req, res) {
 app.get(
     '/speedtest',
     (req, res) => {
+        if (undefined === req.query.serverId) {
+            res.send({
+                status: 'failed',
+                message: 'Server ID is required'
+            })
+        }
         const testId = uuidv4()
-        speedtest.schedule(servers.surfshark_ltd.id, testId);
+        speedtest.schedule(req.query.serverId, testId);
         const response = {
             status: 'success',
             testId: testId,

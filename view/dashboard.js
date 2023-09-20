@@ -1,3 +1,5 @@
+let speedtestModal;
+
 // /* globals Chart:false, feather:false */
 //
 // (function () {
@@ -53,13 +55,18 @@
 // })()
 
 $(document).on('click', '#testButton', () => {
+    speedtestModal.show()
+});
+
+$(document).on('click', '#scheduleButton', () => {
+    speedtestModal.hide()
+    const serverId = $('#selectServer').val()
     $.ajax({
         type: 'get',
-        url: 'http://localhost:4000/speedtest',
+        url: `http://localhost:4000/speedtest?serverId=${serverId}`,
         success: function (response) {
-            console.log(response)
             if ('success' === response.status) {
-                alert(`New Test Scheduled: ${response.testId}`)
+                console.log(`New Test Scheduled: ${response.testId}`)
             } else {
                 alert('Failed to schedule')
             }
@@ -72,11 +79,16 @@ $(document).on('click', '#testButton', () => {
 });
 
 $(document).ready(() => {
+    loadHistory()
+    loadServers()
+    speedtestModal = new bootstrap.Modal($('#speedtestModal'));
+});
+
+const loadHistory = () => {
     $.ajax({
         type: 'get',
         url: 'http://localhost:4000/data',
         success: function (response) {
-            console.log(response)
             let rows = ''
             for(let i=0; i<response.length; ++i) {
                 rows += `<tr>
@@ -94,4 +106,24 @@ $(document).ready(() => {
             console.log(data)
         }
     });
-});
+}
+
+const loadServers = () => {
+    $.ajax({
+        type: 'get',
+        url: 'http://localhost:4000/servers',
+        success: function (servers) {
+            let serverOptions = ''
+            for(let i=0; i<servers.length; ++i) {
+                serverOptions += `
+                    <option value="${servers[i].id}">${servers[i].name}</option>
+                    <option disabled>&nbsp;&nbsp;&nbsp;${servers[i].location}, ${servers[i].country}</option>
+                `
+            }
+            $('#selectServer').html(serverOptions)
+        },
+        error: function (data) {
+            console.log(data)
+        }
+    });
+}
