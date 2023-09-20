@@ -1,78 +1,41 @@
-let speedtestModal;
+/* globals Chart:false, feather:false */
 
-// /* globals Chart:false, feather:false */
-//
-// (function () {
-//     'use strict'
-//
-//     feather.replace({ 'aria-hidden': 'true' })
-//
-//     // Graphs
-//     var ctx = document.getElementById('myChart')
-//     // eslint-disable-next-line no-unused-vars
-//     var myChart = new Chart(ctx, {
-//         type: 'line',
-//         data: {
-//             labels: [
-//                 'Sunday',
-//                 'Monday',
-//                 'Tuesday',
-//                 'Wednesday',
-//                 'Thursday',
-//                 'Friday',
-//                 'Saturday'
-//             ],
-//             datasets: [{
-//                 data: [
-//                     15339,
-//                     21345,
-//                     18483,
-//                     24003,
-//                     23489,
-//                     24092,
-//                     12034
-//                 ],
-//                 lineTension: 0,
-//                 backgroundColor: 'transparent',
-//                 borderColor: '#007bff',
-//                 borderWidth: 4,
-//                 pointBackgroundColor: '#007bff'
-//             }]
-//         },
-//         options: {
-//             scales: {
-//                 yAxes: [{
-//                     ticks: {
-//                         beginAtZero: false
-//                     }
-//                 }]
-//             },
-//             legend: {
-//                 display: false
-//             }
-//         }
-//     })
-// })()
+let ignoreErrorsInChart = true
+let speedtestModal
+let history = []
 
 $(document).on('click', '#testButton', () => {
     speedtestModal.show()
 });
 
-$(document).on('click', '#scheduleButton', () => {
+$(document).on('click', '#testRunButton', () => {
     speedtestModal.hide()
+    notify(
+        '<h3>Test is running, please wait</h3><p>You will be notified when the test is finished</p>',
+        'info'
+    )
     const serverId = $('#selectServer').val()
     $.ajax({
         type: 'get',
         url: `http://localhost:4000/speedtest?serverId=${serverId}`,
         success: function (response) {
             if ('success' === response.status) {
-                console.log(`New Test Scheduled: ${response.testId}`)
+                console.log(response)
+                notify(
+                    `<h3>Test #${response.testId} is finished</h3>
+                        <p>The chart and history table has been updated</p>`,
+                    'success'
+                )
+                history.push(response.testResult)
+                addHistoryRow(response.testResult)
+                renderHistory()
+                drawChart()
             } else {
-                alert('Failed to schedule')
+                console.log('Failed to run')
             }
         },
         error: function (data) {
-            alert('Failed')
+            console.log('Failed')
             console.log(data)
         }
     });
@@ -89,23 +52,37 @@ const loadHistory = () => {
         type: 'get',
         url: 'http://localhost:4000/data',
         success: function (response) {
-            let rows = ''
-            for(let i=0; i<response.length; ++i) {
-                rows += `<tr>
-                        <td>${response[i].id}</td>
-                        <td>${response[i].timestamp}</td>
-                        <td>${response[i].ping}</td>
-                        <td>${response[i].download}</td>
-                        <td>${response[i].upload}</td>
-                        <td>${response[i].result}</td>
-                    </tr>`
-            }
-            $('#history').html(rows)
+            history = response
+            renderHistory()
+            drawChart()
         },
         error: function (data) {
             console.log(data)
         }
     });
+}
+
+const renderHistory = () => {
+    $('#history').html('')
+    for(let i=0; i<history.length; ++i) {
+        addHistoryRow(history[i])
+    }
+}
+
+const addHistoryRow = (speedtest) => {
+    if ('' !== speedtest.ping || !ignoreErrorsInChart) {
+        const result = isUrl(speedtest.result)
+            ? `<a target="_blank" href="${speedtest.result}">${speedtest.result}</a>`
+            : speedtest.result
+        $('#history').append(`<tr>
+        <td>${speedtest.id}</td>
+        <td>${speedtest.timestamp}</td>
+        <td>${speedtest.ping}</td>
+        <td>${speedtest.download}</td>
+        <td>${speedtest.upload}</td>
+        <td>${result}</td>
+    </tr>`)
+    }
 }
 
 const loadServers = () => {
@@ -126,4 +103,109 @@ const loadServers = () => {
             console.log(data)
         }
     });
+}
+
+const drawChart = () => {
+    'use strict'
+
+    feather.replace({ 'aria-hidden': 'true' })
+
+    // Graphs
+    var ctx = document.getElementById('myChart')
+    // eslint-disable-next-line no-unused-vars
+
+    const filteredHistory = ignoreErrorsInChart ? history.filter(speedtest => speedtest.ping !== "") : history
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: filteredHistory.map(speedtest => speedtest.timestamp),
+            datasets: [
+                {
+                    label: 'Download Speed (mbps)',
+                    data: filteredHistory.map(speedtest => speedtest.download),
+                    lineTension: 0,
+                    backgroundColor: 'transparent',
+                    borderColor: '#007bff',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#ff0000',
+                    pointRadius: 5,
+                    pointHoverRadius: 10,
+                },
+                {
+                    label: 'Upload Speed (mbps)',
+                    data: filteredHistory.map(speedtest => speedtest.upload),
+                    lineTension: 0,
+                    backgroundColor: 'transparent',
+                    borderColor: '#00ff99',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#9900ff',
+                    pointRadius: 5,
+                    pointHoverRadius: 10,
+                }
+            ],
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: false
+                    }
+                }]
+            },
+            legend: {
+                display: true
+            }
+        }
+    })
+}
+
+const isUrl = (str) => {
+    var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+        '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+    return !!pattern.test(str);
+}
+
+$(document).on('click', '#errorsOn', () => {
+    ignoreErrorsInChart = false
+    $('#errorsOn')
+        .attr('disabled', true)
+        .removeClass('btn-outline-secondary')
+        .addClass('btn-success')
+    $('#errorsOff')
+        .removeAttr('disabled')
+        .addClass('btn-outline-secondary')
+        .removeClass('btn-danger')
+    renderHistory()
+    drawChart()
+})
+
+$(document).on('click', '#errorsOff', () => {
+    ignoreErrorsInChart = true
+    $('#errorsOff')
+        .attr('disabled', true)
+        .removeClass('btn-outline-secondary')
+        .addClass('btn-danger')
+    $('#errorsOn')
+        .removeAttr('disabled')
+        .addClass('btn-outline-secondary')
+        .removeClass('btn-success')
+    renderHistory()
+    drawChart()
+})
+
+const notify = (message, status = 'success') => {
+    $("#notification")
+        .removeClass('alert-success')
+        .removeClass('alert-error')
+        .addClass(`alert-${status}`)
+        .html(message)
+        .fadeIn();
+    setTimeout(function () {
+        $("#notification").fadeOut();
+    }, 5000);
 }

@@ -25,9 +25,10 @@ app.get(
             })
         }
         const testId = uuidv4()
-        speedtest.schedule(req.query.serverId, testId);
+        const testResult = speedtest.run(req.query.serverId, testId);
         const response = {
             status: 'success',
+            testResult: testResult,
             testId: testId,
         }
         res.send(response)

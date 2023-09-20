@@ -27,6 +27,7 @@ const dataPostProcessor = {
         const speedtest = dataPostProcessor.getModel(output)
         csvProcessor.publish(speedtest)
         jsonProcessor.publish(speedtest)
+        return speedtest
     },
 }
 
