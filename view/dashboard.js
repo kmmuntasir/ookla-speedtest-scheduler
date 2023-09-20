@@ -155,7 +155,7 @@ const drawChart = () => {
             },
             legend: {
                 display: true
-            }
+            },
         }
     })
 }
@@ -170,30 +170,19 @@ const isUrl = (str) => {
     return !!pattern.test(str);
 }
 
-$(document).on('click', '#errorsOn', () => {
-    ignoreErrorsInChart = false
-    $('#errorsOn')
-        .attr('disabled', true)
-        .removeClass('btn-outline-secondary')
-        .addClass('btn-success')
-    $('#errorsOff')
-        .removeAttr('disabled')
-        .addClass('btn-outline-secondary')
-        .removeClass('btn-danger')
-    renderHistory()
-    drawChart()
-})
-
-$(document).on('click', '#errorsOff', () => {
-    ignoreErrorsInChart = true
-    $('#errorsOff')
-        .attr('disabled', true)
-        .removeClass('btn-outline-secondary')
-        .addClass('btn-danger')
-    $('#errorsOn')
-        .removeAttr('disabled')
-        .addClass('btn-outline-secondary')
-        .removeClass('btn-success')
+$(document).on('click', '#errorToggle', () => {
+    ignoreErrorsInChart = !ignoreErrorsInChart
+    if (ignoreErrorsInChart) {
+        $('#errorToggle')
+            .removeClass('btn-danger')
+            .addClass('btn-success')
+        $('#errorToggle > span').html('Hidden')
+    } else {
+        $('#errorToggle')
+            .removeClass('btn-success')
+            .addClass('btn-danger')
+        $('#errorToggle > span').html('Displayed')
+    }
     renderHistory()
     drawChart()
 })
